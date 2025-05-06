@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма для отправки файла</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="email"], input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Форма для отправки файла</h1>
+    
+    <form id="uploadForm" action="php/pin_files" method="post" enctype="multipart/form-data">
+        
+        <div class="form-group">
+            <label for="file">Выберите файл для загрузки:</label>
+            <input type="file" id="file" name="file" required multiple>
+            <p class="error" id="fileError"></p>
+        </div>
+        
+        <div class="form-group">
+            <input type="submit" value="Отправить">
+        </div>
+    </form>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            const fileInput = document.getElementById('file');
+            const fileError = document.getElementById('fileError');
+            
+            // Проверка размера файла (максимум 5MB)
+            if (fileInput.files.length > 0) {
+                const fileSize = fileInput.files[0].size; // в байтах
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                
+                if (fileSize > maxSize) {
+                    fileError.textContent = 'Файл слишком большой. Максимальный размер: 5MB.';
+                    e.preventDefault();
+                    return;
+                }
+            }
+            
+            fileError.textContent = '';
+        });
+    </script>
+</body>
+</html>

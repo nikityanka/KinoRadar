@@ -1,0 +1,145 @@
+dialog.modal {
+    border: 0;
+    border-radius: 10px;
+    min-width: 300px;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.modal-content h2 {
+    text-align: center;
+    margin: 0 0 10px 0;
+}
+
+.modal-content .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.modal-content .form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 90%;
+    margin: 0 auto;
+}
+
+.modal-content .form-part {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.modal-content .form-part.submit {
+    align-items: center;
+    margin-top: 10px;
+}
+
+.modal-content input {
+    font-size: 16px;
+    padding: 10px;
+    border: unset;
+    border-radius: 4px;
+    outline-color: coral;
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, 
+                rgba(0, 0, 0, 0) 0px 0px 0px 0px, 
+                rgba(0, 0, 0, 0) 0px 0px 0px 0px, 
+                rgba(60, 66, 87, 0.16) 0px 0px 0px 1px, 
+                rgba(0, 0, 0, 0) 0px 0px 0px 0px, 
+                rgba(0, 0, 0, 0) 0px 0px 0px 0px, 
+                rgba(0, 0, 0, 0) 0px 0px 0px 0px;
+}
+
+.modal-content label {
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.modal-content button {
+    max-width: fit-content;
+    border: 2px solid coral;
+    background-color: coral;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 16px;
+    transition: .2s;
+    cursor: pointer;
+}
+
+.modal-content button:hover {
+    background-color: white;
+    color: coral;
+}
+
+.authForm {
+    display: flex;
+    justify-content: center;
+}
+
+#toggleText, #toggleTextReg {
+    text-align: center;
+}
+
+#toggleBtn, #toggleBtnReg {
+    background: none;
+    border: none;
+    color: coral;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    font-size: inherit;
+    font-weight: 600;
+}
+
+.message {
+    color: red;
+    text-align: center;
+    font-size: small;
+    margin: 0;
+}
+
+textarea {
+    padding: 10px;
+    font-size: 15px;
+    resize: none;
+}
+
+
+dialog input[type="file"] {
+    display: none;
+}
+
+dialog .file-upload {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+dialog .file-upload-label {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: coral;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 14px;
+}
+
+dialog .file-upload-label:hover {
+    opacity: .8s;
+}
