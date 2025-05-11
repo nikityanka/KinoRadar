@@ -4,8 +4,9 @@ require_once('connect.php');
 require_once('selectel.php'); 
 
 if (empty($_SESSION['user']) || $_SESSION['user']['type'] != 1) {
-    header("HTTP/1.1 403 Forbidden");
-    exit(json_encode(['status' => 'error', 'message' => 'Доступ запрещен']));
+    $_SESSION["message"] = 'Доступ запрещен';
+    header("Location: ../admin/addMovie.php");
+    exit();
 }
 
 $poster_id = null;
@@ -15,14 +16,15 @@ if (!empty($_FILES['poster']) && $_FILES['poster']['error'] === UPLOAD_ERR_OK) {
     $allowed_extensions = ['jpg', 'jpeg', 'png', 'webp'];
     $extension = strtolower(pathinfo($poster['name'], PATHINFO_EXTENSION));
     if (!in_array($extension, $allowed_extensions)) {
-        exit(json_encode([
-            'status' => 'error', 
-            'message' => 'Допустимые форматы: ' . implode(', ', $allowed_extensions)
-        ]));
+        $_SESSION["message"] = 'Допустимые форматы: ' . implode(', ', $allowed_extensions);
+        header("Location: ../admin/addMovie.php");
+        exit();
     }
     
     if ($poster['size'] > 5 * 1024 * 1024) {
-        exit(json_encode(['status' => 'error', 'message' => 'Максимальный размер файла — 5MB']));
+        $_SESSION["message"] = 'Максимальный размер файла — 5MB';
+        header("Location: ../admin/addMovie.php");
+        exit();
     }
     
     $filename = 'poster_' . uniqid() . '.' . $extension;
@@ -33,7 +35,6 @@ if (!empty($_FILES['poster']) && $_FILES['poster']['error'] === UPLOAD_ERR_OK) {
             "Key"    => "posters/" . $filename,
             "Body"   => file_get_contents($poster['tmp_name'])
         ]);
-        
         
         pg_query($connection, "BEGIN");
         
@@ -46,14 +47,18 @@ if (!empty($_FILES['poster']) && $_FILES['poster']['error'] === UPLOAD_ERR_OK) {
         
     } catch (Exception $e) {
         pg_query($connection, "ROLLBACK");
-        exit(json_encode(['status' => 'error', 'message' => 'Ошибка загрузки постера']));
+        $_SESSION["message"] = 'Ошибка загрузки постера';
+        header("Location: ../admin/addMovie.php");
+        exit();
     }
 }
 
 $required_fields = ['title', 'year', 'description', 'original_title', 'country_id', 'director_id', 'genres'];
 foreach ($required_fields as $field) {
     if (empty($_POST[$field])) {
-        exit(json_encode(['status' => 'error', 'message' => 'Заполните все обязательные поля']));
+        $_SESSION["message"] = 'Заполните все обязательные поля';
+        header("Location: ../admin/addMovie.php");
+        exit();
     }
 }
 
@@ -68,7 +73,9 @@ $link = pg_escape_string($connection, $_POST['link'] ?? '');
 
 $validationResult = validateReferences($connection, $country_id, $director_id, $genres);
 if ($validationResult !== true) {
-    exit(json_encode(['status' => 'error', 'message' => $validationResult]));
+    $_SESSION["message"] = $validationResult;
+    header("Location: ../admin/addMovie.php");
+    exit();
 }
 
 $genre_ids_str = '{' . implode(',', $genres) . '}';
@@ -90,27 +97,21 @@ $params = [
 
 $result = pg_query_params($connection, $query, $params);
 if (!$result) {
-    exit(json_encode([
-        'status' => 'error', 
-        'message' => 'Ошибка базы данных: ' . pg_last_error($connection)
-    ]));
+    $_SESSION["message"] = 'Ошибка базы данных: ' . pg_last_error($connection);
+    header("Location: ../admin/addMovie.php");
+    exit();
 }
 
 $response = pg_fetch_assoc($result);
 $json_response = json_decode($response['admin_create_movie'], true);
 
 if ($json_response['status'] === 'success') {
-    header("Location: ../admin/movies");
-    exit(json_encode([
-        'status' => 'success', 
-        'message' => 'Фильм добавлен',
-        'movie_id' => $json_response['movie_id']
-    ]));
+    header("Location: ../admin/movies.php");
+    exit();
 } else {
-    exit(json_encode([
-        'status' => 'error', 
-        'message' => $json_response['message'] ?? 'Неизвестная ошибка'
-    ]));
+    $_SESSION["message"] = $json_response['message'] ?? 'Неизвестная ошибка';
+    header("Location: ../admin/addMovie.php");
+    exit();
 }
 
 function validateReferences($connection, $country_id, $director_id, $genres) {
@@ -142,5 +143,3 @@ function validateReferences($connection, $country_id, $director_id, $genres) {
 
     return true;
 }
-
-?>

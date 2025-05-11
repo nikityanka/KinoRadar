@@ -11,8 +11,9 @@ if (empty($_SESSION['user'])) {
 }
 
 if ($_SESSION['user']['type'] != 1) {
-    header("HTTP/1.1 403 Forbidden");
-    exit(json_encode(['status' => 'error', 'message' => 'Permission Denied']));
+    $_SESSION["message"] = 'Permission Denied';
+    header("Location: ../admin/movies.php");
+    exit;
 }
 
 $movie_id = (int)($_POST['movie_id'] ?? 0);
@@ -26,7 +27,9 @@ $genres = isset($_POST['genre_ids']) ? explode(',', $_POST['genre_ids']) : [];
 $link = pg_escape_string($connection, $_POST['link'] ?? '');
 
 if (empty($movie_id) || empty($title) || empty($year) || empty($description) || empty($original_title)) {
-    exit(json_encode(['status' => 'error', 'message' => 'Please, fill all required fields']));
+    $_SESSION["message"] = 'Пожалуйста, заполните все обязательные поля';
+    header("Location: ../admin/editMovie.php?movie_id=$movie_id");
+    exit;
 }
 
 try {
@@ -62,7 +65,9 @@ try {
 
         $uploadResult = handlePosterUpload($connection, $s3Client, $_FILES['poster']);
         if ($uploadResult['status'] !== 'success') {
-            exit(json_encode($uploadResult));
+            $_SESSION["message"] = $uploadResult['message'];
+            header("Location: ../admin/editMovie.php", true, 307);
+            exit;
         }
 
         if ($poster_id) {
@@ -96,21 +101,23 @@ try {
     $result = pg_query_params($connection, $query, $params);
 
     if (!$result) {
-        throw new Exception('Database error: ' . pg_last_error($connection));
+        throw new Exception('Ошибка базы данных: ' . pg_last_error($connection));
     }
 
     $response = pg_fetch_assoc($result);
     $json_response = json_decode($response['admin_update_movie'], true);
 
     if ($json_response['status'] == 'success') {
-        header("Location: ../admin/movies");
-        exit(json_encode(['status' => 'success', 'message' => 'Film updated']));
+        header("Location: ../admin/movies.php");
+        exit;
     } else {
-        throw new Exception($json_response['message'] ?? 'Unknown error');
+        throw new Exception($json_response['message'] ?? 'Неизвестная ошибка');
     }
 
 } catch (Exception $e) {
-    exit(json_encode(['status' => 'error', 'message' => $e->getMessage()]));
+    $_SESSION["message"] = $e->getMessage();
+    header("Location: ../admin/editMovie.php?movie_id=$movie_id");
+    exit;
 }
 
 function handlePosterUpload($connection, $s3Client, $file) {
@@ -118,11 +125,11 @@ function handlePosterUpload($connection, $s3Client, $file) {
     $maxSize = 5 * 1024 * 1024;
 
     if (!in_array($file['type'], $allowedTypes)) {
-        return ['status' => 'error', 'message' => 'Invalid file type'];
+        return ['status' => 'error', 'message' => 'Недопустимый тип файла'];
     }
 
     if ($file['size'] > $maxSize) {
-        return ['status' => 'error', 'message' => 'File too large (max 5MB)'];
+        return ['status' => 'error', 'message' => 'Файл слишком большой (максимум 5MB)'];
     }
 
     $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
@@ -145,6 +152,6 @@ function handlePosterUpload($connection, $s3Client, $file) {
         ];
 
     } catch (AwsException $e) {
-        return ['status' => 'error', 'message' => 'S3 upload failed: ' . $e->getMessage()];
+        return ['status' => 'error', 'message' => 'Ошибка загрузки файла: ' . $e->getMessage()];
     }
 }

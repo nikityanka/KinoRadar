@@ -305,11 +305,11 @@ $dialogError = (($_SESSION['message']['message_type'] ?? null) == 'success' || (
                                 <div style="display: flex; justify-content: center;">
                                     <input type="submit" value="Отправить">
                                 </div>
-                                <?php if (isset($_SESSION["message"])) { ?>
-                                    <span style="color: red; font-weight: 500; text-align: center"><?= $_SESSION["message"] ?></span>
-                                <?php unset($_SESSION["message"]);
-                                } ?>
                             </form>
+                            <?php if (isset($_SESSION["message"])) { ?>
+                                <span style="color: red; font-weight: 500; text-align: center"><?= $_SESSION["message"] ?></span>
+                            <?php unset($_SESSION["message"]);
+                            } ?>
                         <?php } ?>
                     <?php } else { ?>
                         <div class="auth-required-message">

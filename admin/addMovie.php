@@ -28,12 +28,12 @@ $genres = pg_fetch_all(pg_query($connection, 'SELECT id, genre AS name FROM genr
 
 <body>
     <?php
-        include("header.php");
+    include("header.php");
     ?>
     <main>
         <nav class="side-nav">
             <ul>
-                <a href="./" class="active">
+                <a href="./">
                     <li>
                         <div class="icon">
                             <img src="../media/dashboard.svg" alt="">
@@ -49,7 +49,7 @@ $genres = pg_fetch_all(pg_query($connection, 'SELECT id, genre AS name FROM genr
                         <span>Пользователи</span>
                     </li>
                 </a>
-                <a href="movies.php">
+                <a href="movies.php" class="active">
                     <li>
                         <div class="icon">
                             <img src="../media/movie_white.svg" alt="">
@@ -110,7 +110,7 @@ $genres = pg_fetch_all(pg_query($connection, 'SELECT id, genre AS name FROM genr
                     </div>
                 </div>
                 <div class="form-part">
-                    <label for="genres">Жанр(ы)</label>
+                    <label for="genres">Жанр(ы) (до 3-х)</label>
                     <div class="dropdown">
                         <input type="text" id="genre-display" placeholder="Выберите жанр" class="with-arrow">
                         <input type="hidden" name="genres" id="genres">
@@ -133,7 +133,12 @@ $genres = pg_fetch_all(pg_query($connection, 'SELECT id, genre AS name FROM genr
                 <div class="form-part submit">
                     <button type="submit">Добавить</button>
                 </div>
+                <?php if (isset($_SESSION["message"])) { ?>
+                    <span style="color: red; font-weight: 500; text-align: center"><?= $_SESSION["message"] ?></span>
+                <?php unset($_SESSION["message"]);
+                } ?>
             </form>
+
         </div>
     </main>
 

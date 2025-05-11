@@ -5,11 +5,13 @@ const toggleBtnReg = document.getElementById('toggleBtnReg');
 const loginForm = document.getElementById('loginForm');
 const registrationForm = document.getElementById('registrationForm');
 const body = document.body;
+let isOpen = false;
 
 loginButtons.forEach(button => {
     button.addEventListener('click', () => {
         modal.showModal();
         body.style.filter = 'blur(5px)';
+        isOpen = true;
     });
 });
 
@@ -37,5 +39,13 @@ document.addEventListener('keydown', (event) => {
 
 function closeModal() {
     modal.close();
+    isOpen = false;
     body.style.filter = 'none';
 }
+
+/*
+body.addEventListener('click', () => {
+    if (!isOpen) {
+        closeModal();
+    }
+});*/

@@ -42,7 +42,7 @@ $result = pg_fetch_assoc($result);
     <main>
         <nav class="side-nav">
             <ul>
-                <a href="./" class="active">
+                <a href="./">
                     <li>
                         <div class="icon">
                             <img src="../media/dashboard.svg" alt="">
@@ -58,7 +58,7 @@ $result = pg_fetch_assoc($result);
                         <span>Пользователи</span>
                     </li>
                 </a>
-                <a href="movies.php">
+                <a href="movies.php" class="active">
                     <li>
                         <div class="icon">
                             <img src="../media/movie_white.svg" alt="">
@@ -122,7 +122,7 @@ $result = pg_fetch_assoc($result);
                     </div>
                 </div>
                 <div class="form-part">
-                    <label for="genres">Жанр(ы)</label>
+                    <label for="genres">Жанр(ы) (до 3-х)</label>
                     <div class="dropdown">
                         <input type="text" id="genre-display" placeholder="Выберите жанр" class="with-arrow" value="<?= implode(', ', array_map(function ($gid) use ($genres) {
                                                                                                                         $genre = array_values(array_filter($genres, function ($g) use ($gid) {
@@ -135,12 +135,12 @@ $result = pg_fetch_assoc($result);
                 </div>
                 <div class="form-part">
                     <div class="file-upload">
-                        <label for="avatar" class="file-upload-label">
+                        <label for="poster" class="file-upload-label">
                             Выбрать файл
                         </label>
                         <span class="file-name" id="file-name"><?= basename($result['poster_image']) ?></span>
                     </div>
-                    <input type="file" id="avatar" name="avatar" accept="image/*">
+                    <input type="file" id="poster" name="poster" accept="image/*">
                     <input type="hidden" name="existing_poster" value="<?= $result['poster_image'] ?>">
                 </div>
                 <div class="form-part">
@@ -150,6 +150,10 @@ $result = pg_fetch_assoc($result);
                 <div class="form-part submit">
                     <button type="submit">Сохранить изменения</button>
                 </div>
+                <?php if (isset($_SESSION["message"])) { ?>
+                    <span style="color: red; font-weight: 500; text-align: center"><?= $_SESSION["message"] ?></span>
+                <?php unset($_SESSION["message"]);
+                } ?>
             </form>
         </div>
     </main>
