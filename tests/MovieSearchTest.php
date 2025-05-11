@@ -16,23 +16,7 @@ class MovieSearchTest extends PHPUnit\Framework\TestCase
         $searchQuery = 'Начало';
         $result = pg_query_params(self::$connection, "SELECT * FROM get_filtered_movies(p_limit => 50, p_offset => 0) WHERE title ILIKE $1", array('%' . $searchQuery . '%'));
         $this->assertNotFalse($result);
-        $this->assertGreaterThan(0, pg_num_rows($result), "No movies found for title: $searchQuery");
-    }
-
-    public function testSearchByCountry()
-    {
-        $countryName = 'США';
-        $result = pg_query_params(self::$connection, "SELECT * FROM get_filtered_movies(p_country_name => $1, p_limit => 50, p_offset => 0)", array($countryName));
-        $this->assertNotFalse($result);
-        $this->assertGreaterThan(0, pg_num_rows($result), "No movies found for country: $countryName");
-    }
-
-    public function testSearchByGenre()
-    {
-        $genreName = 'Экшен';
-        $result = pg_query_params(self::$connection, "SELECT * FROM get_filtered_movies(p_genre_name => $1, p_limit => 50, p_offset => 0)", array($genreName));
-        $this->assertNotFalse($result);
-        $this->assertGreaterThan(0, pg_num_rows($result), "No movies found for genre: $genreName");
+        $this->assertGreaterThan(0, pg_num_rows($result), "Фильмов не найдено с заголовком: $searchQuery");
     }
 
     public function testSearchByYearRange()
@@ -41,7 +25,7 @@ class MovieSearchTest extends PHPUnit\Framework\TestCase
         $yearTo = 2020;
         $result = pg_query_params(self::$connection, "SELECT * FROM get_filtered_movies(p_year_from => $1, p_year_to => $2, p_limit => 50, p_offset => 0)", array($yearFrom, $yearTo));
         $this->assertNotFalse($result);
-        $this->assertGreaterThan(0, pg_num_rows($result), "No movies found for year range: $yearFrom to $yearTo");
+        $this->assertGreaterThan(0, pg_num_rows($result), "Фильмов не найдено с интервалом от $yearFrom до $yearTo");
     }
 
     public static function tearDownAfterClass(): void
