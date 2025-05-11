@@ -66,7 +66,7 @@ try {
         $uploadResult = handlePosterUpload($connection, $s3Client, $_FILES['poster']);
         if ($uploadResult['status'] !== 'success') {
             $_SESSION["message"] = $uploadResult['message'];
-            header("Location: ../admin/editMovie.php", true, 307);
+            header("Location: ../admin/editMovie.php?movie_id=$movie_id");
             exit;
         }
 

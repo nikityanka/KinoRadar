@@ -15,13 +15,28 @@ $countries = pg_fetch_all(pg_query($connection, 'SELECT id, country_name AS name
 $directors = pg_fetch_all(pg_query($connection, 'SELECT id, name FROM director ORDER BY name'));
 $genres = pg_fetch_all(pg_query($connection, 'SELECT id, genre AS name FROM genre ORDER BY genre'));
 
+// Получаем movieid из POST или GET (при редиректе с ошибкой)
+$movieid = $_POST["movieid"] ?? $_GET["movie_id"] ?? null;
 
-$movieid = $_POST["movieid"];
+if (!$movieid) {
+    header("Location: movies.php");
+    exit;
+}
 
 $query = "SELECT * FROM get_movie_details($1)";
 $result = pg_query_params($connection, $query, array($movieid));
 
+if (!$result) {
+    header("Location: movies.php");
+    exit;
+}
+
 $result = pg_fetch_assoc($result);
+
+if (!$result) {
+    header("Location: movies.php");
+    exit;
+}
 
 ?>
 <!DOCTYPE html>
@@ -88,37 +103,37 @@ $result = pg_fetch_assoc($result);
             <h2>Изменение фильма</h2>
             <div class="separator"></div>
             <form action="../php/editMovie" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="movie_id" value="<?= $result['movie_id'] ?>">
+                <input type="hidden" name="movie_id" value="<?= htmlspecialchars($result['movie_id'] ?? '') ?>">
                 <div class="form-part">
                     <label for="title">Название фильма</label>
-                    <input type="text" id="title" name="title" value="<?= htmlspecialchars($result['movie_title']) ?>" required>
+                    <input type="text" id="title" name="title" value="<?= htmlspecialchars($result['movie_title'] ?? '') ?>" required>
                 </div>
                 <div class="form-part">
                     <label for="year">Год выпуска</label>
-                    <input type="text" id="year" name="year" value="<?= htmlspecialchars($result['release_year']) ?>" required maxlength="4">
+                    <input type="text" id="year" name="year" value="<?= htmlspecialchars($result['release_year'] ?? '') ?>" required maxlength="4">
                 </div>
                 <div class="form-part">
                     <label for="description">Описание</label>
-                    <textarea rows="5" cols="50" id="description" name="description" required><?= htmlspecialchars($result['movie_description']) ?></textarea>
+                    <textarea rows="5" cols="50" id="description" name="description" required><?= htmlspecialchars($result['movie_description'] ?? '') ?></textarea>
                 </div>
                 <div class="form-part">
                     <label for="original_title">Оригинальное название фильма</label>
-                    <input type="text" id="original_title" name="original_title" value="<?= htmlspecialchars($result['original_title']) ?>" required>
+                    <input type="text" id="original_title" name="original_title" value="<?= htmlspecialchars($result['original_title'] ?? '') ?>" required>
                 </div>
                 <div class="form-part">
                     <label for="country">Страна</label>
                     <div class="dropdown">
-                        <input type="text" id="country-display" placeholder="Выберите страну" class="with-arrow" value="<?= htmlspecialchars($result['country_name']) ?>">
+                        <input type="text" id="country-display" placeholder="Выберите страну" class="with-arrow" value="<?= htmlspecialchars($result['country_name'] ?? '') ?>">
                         <input type="hidden" name="country_id" id="country" value="<?= array_values(array_filter($countries, function ($c) use ($result) {
-                                                                                        return $c['name'] === $result['country_name'];
+                                                                                        return $c['name'] === ($result['country_name'] ?? '');
                                                                                     }))[0]['id'] ?? '' ?>">
                     </div>
                 </div>
                 <div class="form-part">
                     <label for="director">Режиссёр</label>
                     <div class="dropdown">
-                        <input type="text" id="director-display" placeholder="Выберите режиссёра" class="with-arrow" value="<?= htmlspecialchars($result['director_name']) ?>">
-                        <input type="hidden" name="director_id" id="director" value="<?= $result['director_id'] ?>">
+                        <input type="text" id="director-display" placeholder="Выберите режиссёра" class="with-arrow" value="<?= htmlspecialchars($result['director_name'] ?? '') ?>">
+                        <input type="hidden" name="director_id" id="director" value="<?= $result['director_id'] ?? '' ?>">
                     </div>
                 </div>
                 <div class="form-part">
@@ -129,8 +144,8 @@ $result = pg_fetch_assoc($result);
                                                                                                                             return $g['id'] == $gid;
                                                                                                                         }))[0] ?? [];
                                                                                                                         return $genre['name'] ?? '';
-                                                                                                                    }, explode(',', trim($result['movie_genres'], '{}')))) ?>">
-                        <input type="hidden" name="genre_ids" id="genres" value="<?= implode(',', explode(',', trim($result['movie_genres'], '{}'))) ?>">
+                                                                                                                    }, explode(',', trim($result['movie_genres'] ?? '', '{}')))) ?>">
+                        <input type="hidden" name="genre_ids" id="genres" value="<?= implode(',', explode(',', trim($result['movie_genres'] ?? '', '{}'))) ?>">
                     </div>
                 </div>
                 <div class="form-part">
@@ -138,14 +153,14 @@ $result = pg_fetch_assoc($result);
                         <label for="poster" class="file-upload-label">
                             Выбрать файл
                         </label>
-                        <span class="file-name" id="file-name"><?= basename($result['poster_image']) ?></span>
+                        <span class="file-name" id="file-name"><?= basename($result['poster_image'] ?? '') ?></span>
                     </div>
                     <input type="file" id="poster" name="poster" accept="image/*">
-                    <input type="hidden" name="existing_poster" value="<?= $result['poster_image'] ?>">
+                    <input type="hidden" name="existing_poster" value="<?= $result['poster_image'] ?? '' ?>">
                 </div>
                 <div class="form-part">
                     <label for="link">Ссылка</label>
-                    <input type="text" id="link" name="link" value="<?= htmlspecialchars($result['movie_link']) ?>" required>
+                    <input type="text" id="link" name="link" value="<?= htmlspecialchars($result['movie_link'] ?? '') ?>" required>
                 </div>
                 <div class="form-part submit">
                     <button type="submit">Сохранить изменения</button>
