@@ -28,7 +28,6 @@ $dialogError = (($_SESSION['message']['message_type'] ?? null) == 'success' || (
     : null;
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 

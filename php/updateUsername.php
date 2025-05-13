@@ -39,11 +39,6 @@ try {
     if ($result['status'] == 'success') {
         if (strpos($result['message'], 'успешно обновлено') !== false) {
             $_SESSION['user']['username'] = $newusername;
-            $_SESSION['message'] = [
-                'message_type' => 'success',
-                'message_dialog' => 'usernameModal',
-                'message_desc' => 'Имя успешно изменено!'
-            ];
         } else {
             $_SESSION['message'] = [
                 'message_type' => 'info',
