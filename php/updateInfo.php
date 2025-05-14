@@ -13,8 +13,8 @@ if (!isset($_SESSION['user'])) {
 }
 
 $userid = $_SESSION['user']['id'];
-$newEmail = isset($_POST['new_email']) ? trim($_POST['new_email']) : '';
-$newAbout = isset($_POST['new_about']) ? trim($_POST['new_about']) : '';
+$newEmail = isset($_POST['new_email']) ? trim(strip_tags($_POST['new_email'])) : '';
+$newAbout = isset($_POST['new_about']) ? trim(strip_tags($_POST['new_about'])) : '';
 
 if (empty($newEmail)) {
     $_SESSION['message'] = [
